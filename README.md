@@ -4,6 +4,8 @@
 
 ![A GIF animation showing Scavenger being used to get instant search results from an array of static resources. A button is later clicked adding more static resources on-the-fly.](./scavenger.gif)
 
+## [See this demo live](https://codesandbox.io/s/scavenger-o44bxn)
+
 ## Features
 
 - Initially populate searchable resources and/or add some on-the-fly.
