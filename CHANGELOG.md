@@ -1,3 +1,7 @@
+### PATCH : Version 2.0.3:
+
+- Added `sortObjectsInSpecificOrder` function.
+
 ### PATCH : Version 2.0.2:
 
 - Hopefully fixed a minor update issue (again).
