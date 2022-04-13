@@ -2,9 +2,9 @@
 
 ⚡️ A lightning-fast static resource search library for React
 
-![A GIF animation showing Scavenger being used to get instant search results from an array of static resources. A button is later clicked adding more static resources on-the-fly.](./scavenger.gif)
-
 ## [See this demo live](https://codesandbox.io/s/scavenger-o44bxn)
+
+## [View the demo GIF](https://codeberg.org/athena/Scavenger/media/branch/main/scavenger.gif)
 
 ## Features
 
@@ -29,29 +29,12 @@ or
 npm install @infinium/scavenger
 ```
 
-## Basic Understanding
-
-Scavenger doesn't work like Google or other search engines. The suggestions are derived from **static** resources. That is, no HTTP requests are made. This is what gives Scavenger the ability to be so-called "lightning-fast."
-
-Don't worry, you don't have to know ahead-of-time all of your searchable resources. Indeed, the "Features" section spoke of adding resources on-the-fly.
-
-## Understanding Terms
-
-Just to give you an idea of what I'm talking about, here's a brief explanation of the terms I use to describe certain types of data.
-
-**Resources** are JavaScript objects that must contain, at minimum, a property `type` (this can be changed). These are the "searchable" resources. They could be, for instance, User objects or Article objects. They're just the data you want searched. They must be an object, however.
-
-A **resource pool** is just an array of resources.
-
-**Schemas** are JavaScript objects, too, but they declare searchable properties that exist on **Resources.** That is, if you don't want to make the `id` of a **Resource** searchable, you **won't** put it into the **Schema**.
-
-(In reality, you only ever declare one Schema, but it itself declares properties for multiple types of objects. That is, you can have Searchable articles separated from searchable pages.)
-
 ## Usage at a Glance
 
-1. Create Schemas that define searchable properties in your data.
-2. Load static and/or dynamic resources to be searched at any point in time.
-3. Display the results with a React hook.
+1. Create `Schema`s that define searchable properties in your data.
+2. Load resources to be searched at any point in time via the `ScavengerProvider`.
+3. Display the results with the `useScavenger` hook.
+4. (Optional) Load resources via an `async` function later.
 
 ## Understanding vs. Boilerplate Code
 
@@ -61,25 +44,58 @@ If you've already read it and just want drop-in boilerplate code, visit the [wik
 
 ## Documentation
 
-To learn how to use Scavenger, go through the [interactive documentation found at this Sandbox.](https://codesandbox.io/s/scavenger-nzxwu) If you're not into CodeSandbox, you can view the `example/` directory; it's the same thing, just more hassle to set up.
+### Basic Understanding
 
-If you're more keen on traditional API documentation, keep reading.
+Scavenger doesn't work like Google or other search engines. The suggestions are derived from **static** resources. That is, no HTTP requests are made. This is what gives Scavenger the ability to be so-called "lightning-fast."
 
-### `ScavengerProvider`
+Don't worry, you don't have to know ahead-of-time all of your searchable resources. You can add some later on-the-fly.
 
-Scavenger needs to keep track of all of your resources across different hook instances. To do this, Scavenger exports a provider which will wrap your application and give the `useScavenger` hook the context it needs to operate.
+Just to give you an idea of what I'm talking about, here's a brief explanation of the terms I use to describe certain types of data.
 
-The provider accepts a few parameters, all of which are explained here:
+**Resources** are JavaScript objects that must contain, at minimum, a property `type` (this can be changed). These are the "searchable" resources. They could be, for instance, User objects or Article objects. They're just the data you want searched. They **must be an object**, however.
+
+A **resource pool** is just an array of resources.
+
+**Schemas** are JavaScript objects, too, but they declare searchable properties that exist on **Resources.** In reality, you only ever declare one Schema, but it itself declares properties for multiple types of objects.
+
+### Learning Scavenger
+
+If you're into more "interactive" documentation, this [code-oriented Codesandbox tutorial might be desirable.](https://codesandbox.io/s/scavenger-nzxwu)
+
+If you're not into CodeSandbox or if you prefer reading English instead, below I explain the API and how to use it (probably with a better understanding than the sandbox, really).
+
+### The `ScavengerProvider`
+
+Many websites like to have multiple search components throughout their website in different contexts. Since it'd be tedious to constantly be importing and initializing Scavenger for each one, Scavenger exports the `ScavengerProvider` component. This wraps a part of your application and allows the resources to be shared across each of the hook instances.
+
+If you're wondering how to have different hook instances search for different objects, see the `useScavenger` section below.
+
+The provider accepts a few parameters, all of which are explained below:
 
 #### `initialResources: any[]`
 
-This is an array of JS objects that act as your initial array of static resources. At minimum, each object needs to have a `type` property that is equal to the name of the Schema object you use. For instance, in the example, the type is `Language`.
+This is an array of JS objects that act as your initial array of static resources. At minimum, each object needs to have a `type` property that is equal to the name of the Schema object you use.
 
-It's not required to pass anything here.
+For demonstration, I'll be talking about an array of `Language`s. The `Language` object looks like:
+
+```json
+{
+	"type": "Language",
+	"name": "TypeScript"
+}
+```
+
+The `type` property is special here. It is what the `Schema` uses and therefore what allows Scavenger to find this resource.
+
+> What if I already have a `type` property in my data?
+
+You can change this in the hook, which is explained below.
+
+It's not required to pass anything to this prop if you don't want to.
 
 #### `suggestions: any[]`
 
-This is an array of objects that are suggested when the query is an empty string. If left empty, this will default to your `initialResources`.
+This is an array of objects that are suggested when the query is an empty string. If left empty, this will default to your `initialResources`, so **make sure to add some here.**
 
 #### `schema: Schema`
 
@@ -116,11 +132,9 @@ const Schema = {
 
 Great! Now all we have to do is make sure our data conforms to this Schema.
 
-> What if I already have a `type` property in my objects?
+So, how does Scavenger know what resources are of what type? Notice the `type: 'User'` value in the above code. The `Schema`s keys are the values of the `type` property.
 
-Just map your data before adding it to Scavenger. Change `type` to `_type` for instance.
-
-### `useScavenger(query: string, options: Options)`
+### `useScavenger(query: string, scope: string, options: Options)`
 
 This is the primary hook you'll be using.
 
@@ -128,37 +142,32 @@ Basic usage looks like:
 
 ```js
 const [query, setQuery] = useState('');
-const scavenger = useScavenger(query, {
+const scavenger = useScavenger(query, scope, {
     sortBy: 'name',
-    scope: 'root',
+	id: 'type',
 });
 ```
 
 ### Parameters
 
-The hook accepts two parameters: `query` and `options`.
+The hook accepts three parameters: `query`, `scope`, and `options`.
 
-Query is just a string used in the searching.
+`query` is understandably the string the user is searching for.
+
+`scope` is how you can limit the results by the `type` property. `scope` defaults to `root` which is all of your resources.
 
 Options is an object with the following properties:
 
 ```js
 interface Options {
     sortBy: string;
-    scope: string;
     id: string;
 }
 ```
 
 **`sortBy`** is the string name of a property on your objects that you want to sort by. For instance, you could sort by the title or description. It defaults to "name". The value attached to this property **must** be a string.
 
-**`scope`** is the name of a Schema property that limits the search results to one specific type.
-
-**`id`** is the property name that distinguishes some resources from others. This is the Schema type/property we're talking about. It defaults to `type`, which we recommend; if you must change it, you can.
-
-This means that you can have one global search with scope `root`, and one inner search within your blog that only searches for resources of type `Article`.
-
-It defaults to `root`, which is your entire resource pool.
+**`id`** is the property name that distinguishes some resources from others. This is the Schema type/property we're talking about. It defaults to `type`, which we recommend; if you must change it, you can. You cannot, however, declare this value globally. You must do it manually for each hook instance.
 
 ### Returns
 
@@ -166,7 +175,7 @@ The returned object (`scavenger`) gives us a few things:
 
 #### `results: any[]`
 
-This is, as you'd expect, an array of the results returned from the search. It returns an array of objects that you passed in.
+This is, as you'd expect, an array of the results returned from the search. It returns an array of objects that you passed in, **not just the properties you declare in your `Schema`.**
 
 #### `loadResources(resources: any[], merge: boolean = true)`
 
