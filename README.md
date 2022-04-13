@@ -2,9 +2,16 @@
 
 ⚡️ A lightning-fast static resource search library for React
 
-## [See this demo live](https://codesandbox.io/s/scavenger-o44bxn)
+## Navigation
 
-## [View the demo GIF](https://codeberg.org/athena/Scavenger/media/branch/main/scavenger.gif)
+- [Live demo](https://codesandbox.io/s/scavenger-o44bxn)
+- [Demo GIF](https://codeberg.org/athena/Scavenger/media/branch/main/scavenger.gif)
+- [Documentation](https://codeberg.org/athena/Scavenger#documentation)
+    - [`ScavengerProvider`](https://codeberg.org/athena/Scavenger#the-scavengerprovider)
+    - [`useScavenger`](https://codeberg.org/athena/Scavenger#usescavenger-query-string-scope-string-options-options)
+    - [Dynamically populate resources](https://codeberg.org/athena/Scavenger#loadresources-resources-any-merge-boolean-true)
+    - [Specialized sorting](https://codeberg.org/athena/Scavenger#sortobjectsinspecificorder-results-any-order-string-type-string)
+- [FAQs](https://codeberg.org/athena/Scavenger#faqs)
 
 ## Features
 
@@ -80,8 +87,8 @@ For demonstration, I'll be talking about an array of `Language`s. The `Language`
 
 ```json
 {
-	"type": "Language",
-	"name": "TypeScript"
+    "type": "Language",
+    "name": "TypeScript"
 }
 ```
 
@@ -144,7 +151,7 @@ Basic usage looks like:
 const [query, setQuery] = useState('');
 const scavenger = useScavenger(query, scope, {
     sortBy: 'name',
-	id: 'type',
+    id: 'type',
 });
 ```
 
@@ -207,17 +214,17 @@ For these purposes, we can use the new `sortObjectsInSpecificOrder` function. It
 import { useScavenger, sortObjectsInSpecificOrder } from '@infinium/scavenger';
 
 const MyComponent = () => {
-	const scavenger = useScavenger(query, 'root', {
-		sortBy: 'title'
-	});
+    const scavenger = useScavenger(query, 'root', {
+        sortBy: 'title'
+    });
 
-	const order = ['Page', 'Article', 'Project'];
+    const order = ['Page', 'Article', 'Project'];
 
-	return (
-		<>
-			{sortObjectsInSpecificOrder(scavenger.results, order, 'type')}
-		</>
-	);
+    return (
+        <>
+            {sortObjectsInSpecificOrder(scavenger.results, order, 'type')}
+        </>
+    );
 }
 ```
 
