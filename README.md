@@ -186,6 +186,36 @@ scavenger.loadResources([], false);
 
 Just in case you need access to the entire array of resources, it's exported.
 
+## Other API values
+
+### `sortObjectsInSpecificOrder(results: any[], order: string[], type: string)`
+
+When I've used Scavenger on my personal websites, I've often found myself wanting certain types of results to show up before others. For instance, I often want Pages to be first, and other items to be second.
+
+For these purposes, we can use the new `sortObjectsInSpecificOrder` function. It does not integrate into the hook, but it can act as a wrapper for the results in the following way:
+
+```jsx
+import { useScavenger, sortObjectsInSpecificOrder } from '@infinium/scavenger';
+
+const MyComponent = () => {
+	const scavenger = useScavenger(query, 'root', {
+		sortBy: 'title'
+	});
+
+	const order = ['Page', 'Article', 'Project'];
+
+	return (
+		<>
+			{sortObjectsInSpecificOrder(scavenger.results, order, 'type')}
+		</>
+	);
+}
+```
+
+With this, the output of the results will be sorted in the order we specified in the `order` array. That is, `Page`s will always be first, followed by `Article`s and `Project`s.
+
+Note that this doesn't override the default `sortBy` value. The results will first be sorted by `title`, then sorted again by `type`. This means that within each `type`, the results will be alphabetically sorted. This is usually the desired approach.
+
 ## FAQs
 
 > How can I increase the relevancy of the results?

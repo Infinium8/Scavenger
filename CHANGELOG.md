@@ -1,3 +1,7 @@
+### PATCH : Version 2.0.5:
+
+- Update README to mention the new `sortObjectsInSpecificOrder` function.
+
 ### PATCH : Version 2.0.4:
 
 - Add live demo link in README.
