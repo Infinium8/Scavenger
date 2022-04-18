@@ -113,14 +113,31 @@ const filterResults = (
 	return results.filter((result) => scope.includes(result[id]));
 };
 
+
+const emptySortByProperty = (sortBy: string, v: any) => {
+	console.error(`Scavenger: Attempted to sort values but the "${sortBy}" property was not found in the resource we tried. See the console for more information.`);
+	console.error('Scavenger: Empty sortBy value in the following property');
+	console.log(v);
+}
+
 // Sorts the results array by a property
 // sortBy
 const sortResultsByTypeProperty = (results: any[], sortBy: string) => {
 	return results.length === 0
 		? []
 		: [...results].sort((a, b) => {
-			let fa = a[sortBy].toLowerCase(),
-				fb = b[sortBy].toLowerCase();
+			if (!a || !a[sortBy]) {
+				emptySortByProperty(sortBy, a);
+				return 0;
+			}
+
+			if (!b || !b[sortBy]) {
+				emptySortByProperty(sortBy, b);
+				return 0;
+			}
+
+			let fa = a[sortBy].toLowerCase();
+			let fb = b[sortBy].toLowerCase();
 
 			if (fa > fb) {
 				return 1;

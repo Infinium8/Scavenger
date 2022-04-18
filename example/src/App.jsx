@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import useScavenger, { ScavengerProvider } from '@infinium/scavenger';
+import { useScavenger, ScavengerProvider } from '@infinium/scavenger';
 
 // Define some example data
 const resources = [
@@ -90,10 +90,8 @@ const MyComponent = () => {
 	const [scope, setScope] = useState('root');
 
 	// 4. Invoke the useScavenger hook.
-	const scavenger = useScavenger(query, {
+	const scavenger = useScavenger(query, scope, {
 		sortBy: 'name',
-		scope,
-		id: 'type'
 	});
 
 	return (

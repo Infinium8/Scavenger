@@ -1,6 +1,6 @@
 # Scavenger
 
-⚡️ A lightning-fast static resource search library for React
+⚡️ A lightning-fast static resource search library for React.
 
 ## Navigation
 

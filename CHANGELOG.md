@@ -1,3 +1,7 @@
+### MAJOR : Version 3.0.0:
+
+- Add error-handling to sorting function.
+
 ### PATCH : Version 2.0.6:
 
 - Update README to include v2 documentation.
