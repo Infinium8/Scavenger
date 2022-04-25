@@ -1,6 +1,6 @@
 {
 	"name": "@infinium/scavenger",
-	"version": "3.0.0",
+	"version": "3.1.0",
 	"description": "A lightning-fast search library for React.",
 	"private": false,
 	"author": "Infinium LLC.",
